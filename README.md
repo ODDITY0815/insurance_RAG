@@ -70,7 +70,7 @@ pip install --upgrade pip setuptools wheel
 pip install python-dateutil pytz pandas openpyxl
 
 # Streamlit 및 RAG 관련 패키지 설치
-pip install streamlit python-dotenv gspread google-auth 
+pip install streamlit python-dotenv gspread google-auth gdown
 pip install langchain langchain-community langchain-chroma langchain-huggingface langchain-google-genai pydantic
 
 # 임베딩 모델 구동을 위한 필수 패키지
