@@ -21,40 +21,35 @@ import recommend
 # 0. 벡터DB 불러오기
 # ============================================================================
 def setup_vector_dbs():
-    # 현재 파일의 절대 경로를 기준으로 설정
     base_path = os.path.dirname(os.path.abspath(__file__))
-    
     db_configs = [
-        {
-            "id": "1ttI_cujWXDOBFkD6WO_vlI21V3YGzgSB", 
-            "zip_name": "chroma_db_catalog.zip", 
-            "folder_name": os.path.join(base_path, "chroma_db_catalog")
-        },
-        {
-            "id": "11D34U49KZwgJLnURnCu8K4p8kKjBlaL4", 
-            "zip_name": "chroma_db_clause.zip", # 이름 수정
-            "folder_name": os.path.join(base_path, "chroma_db_clause")
-        }
+        {"id": "1ttI_cujWXDOBFkD6WO_vlI21V3YGzgSB", "zip_name": "chroma_db_catalog.zip", "folder": "chroma_db_catalog"},
+        {"id": "11D34U49KZwgJLnURnCu8K4p8kKjBlaL4", "zip_name": "chroma_db_clause.zip", "folder": "chroma_db_clause"}
     ]
 
     for db in db_configs:
-        if not os.path.exists(db["folder_name"]):
-            st.info(f"데이터베이스({os.path.basename(db['folder_name'])})를 구성 중입니다. 잠시만 기다려주세요...")
-            url = f'https://drive.google.com/uc?id={db["id"]}'
-            
-            try:
-                # fuzzy=True를 추가하여 구글 드라이브 경고창 우회
-                gdown.download(url, db["zip_name"], quiet=False, fuzzy=True)
+        target_path = os.path.join(base_path, db["folder"])
+        if not os.path.exists(target_path):
+            # st.status를 사용하면 Streamlit이 서버 연결을 끊지 않고 기다려줍니다.
+            with st.status(f"🛠️ {db['folder']} 구성 중...", expanded=True) as status:
+                st.write("☁️ 구글 드라이브에서 데이터 다운로드 중...")
+                url = f'https://drive.google.com/uc?id={db["id"]}'
+                zip_path = os.path.join(base_path, db["zip_name"])
                 
-                if os.path.exists(db["zip_name"]):
-                    with zipfile.ZipFile(db["zip_name"], 'r') as zip_ref:
-                        # 압축 파일 내부에 폴더가 이미 포함되어 있는지, 파일만 있는지 확인 필요
-                        zip_ref.extractall(base_path)
-                    os.remove(db["zip_name"])
-            except Exception as e:
-                st.error(f"DB 다운로드 중 오류 발생: {e}")
-# 앱 시작 시 한 번 실행
-setup_vector_dbs()
+                gdown.download(url, zip_path, quiet=False, fuzzy=True)
+                
+                st.write("📦 압축 해제 중...")
+                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                    zip_ref.extractall(base_path)
+                
+                os.remove(zip_path)
+                status.update(label=f"✅ {db['folder']} 완료!", state="complete")
+
+# --- 2. 리소스 로드 로직 (Lazy Loading) ---
+@st.cache_resource
+def get_vectorstores():
+    # 여기서 호출하면 앱이 켜진 후, 실제 필요할 때만 다운로드를 시작합니다.
+    setup_vector_dbs()
 
 
 # 이후 기존 app.py 코드 진행...
