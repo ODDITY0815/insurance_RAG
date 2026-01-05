@@ -76,6 +76,11 @@ pip install langchain langchain-community langchain-chroma langchain-huggingface
 # 임베딩 모델 구동을 위한 필수 패키지
 pip install sentence-transformers huggingface-hub
 ```
+
+# 원할 경우 requirements.txt 설치
+```
+pip install -r requirements.txt
+```
 3. 서비스 실행
 설치가 완료되면 아래 명령어로 앱을 구동합니다.
 ```
