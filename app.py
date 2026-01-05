@@ -20,52 +20,42 @@ import recommend
 # ============================================================================
 # 0. 벡터DB 불러오기
 # ============================================================================
-import gdown
-import os
-import zipfile
-
 def setup_vector_dbs():
-    # 구글 드라이브 파일 ID 설정 (본인의 ID로 교체)
+    # 현재 파일의 절대 경로를 기준으로 설정
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    
     db_configs = [
         {
             "id": "1ttI_cujWXDOBFkD6WO_vlI21V3YGzgSB", 
             "zip_name": "chroma_db_catalog.zip", 
-            "folder_name": "./chroma_db_catalog"
+            "folder_name": os.path.join(base_path, "chroma_db_catalog")
         },
         {
             "id": "11D34U49KZwgJLnURnCu8K4p8kKjBlaL4", 
-            "zip_name": "chroma_db_catalog_clause.zip", 
-            "folder_name": "./chroma_db_clause"
+            "zip_name": "chroma_db_clause.zip", # 이름 수정
+            "folder_name": os.path.join(base_path, "chroma_db_clause")
         }
     ]
 
     for db in db_configs:
-        # 폴더가 이미 존재하는지 확인
         if not os.path.exists(db["folder_name"]):
-            print(f"{db['folder_name']} 다운로드 중...")
+            st.info(f"데이터베이스({os.path.basename(db['folder_name'])})를 구성 중입니다. 잠시만 기다려주세요...")
             url = f'https://drive.google.com/uc?id={db["id"]}'
             
             try:
-                # 다운로드
-                gdown.download(url, db["zip_name"], quiet=False)
+                # fuzzy=True를 추가하여 구글 드라이브 경고창 우회
+                gdown.download(url, db["zip_name"], quiet=False, fuzzy=True)
                 
-                # 압축 해제
-                with zipfile.ZipFile(db["zip_name"], 'r') as zip_ref:
-                    zip_ref.extractall("./")
-                
-                # 압축 파일 삭제
-                os.remove(db["zip_name"])
-                print(f"{db['folder_name']} 설정 완료.")
+                if os.path.exists(db["zip_name"]):
+                    with zipfile.ZipFile(db["zip_name"], 'r') as zip_ref:
+                        # 압축 파일 내부에 폴더가 이미 포함되어 있는지, 파일만 있는지 확인 필요
+                        zip_ref.extractall(base_path)
+                    os.remove(db["zip_name"])
             except Exception as e:
-                print(f"{db['folder_name']} 처리 중 오류 발생: {e}")
-        else:
-            print(f"{db['folder_name']} 가 이미 존재합니다.")
-
+                st.error(f"DB 다운로드 중 오류 발생: {e}")
 # 앱 시작 시 한 번 실행
 setup_vector_dbs()
 
-# 앱 실행 시 가장 먼저 호출
-setup_vector_dbs()
 
 # 이후 기존 app.py 코드 진행...
 # ============================================================================
@@ -267,8 +257,10 @@ def load_toc_data():
 if "global_toc_data" not in st.session_state:
     st.session_state.global_toc_data = load_toc_data()
 
-PERSIST_DIR = "./chroma_db_clause"
-CATALOG_DIR = "./chroma_db_catalog"
+# 기존 상대 경로 대신 절대 경로 권장
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PERSIST_DIR = os.path.join(BASE_DIR, "chroma_db_clause")
+CATALOG_DIR = os.path.join(BASE_DIR, "chroma_db_catalog")
 MODEL_NAME = "BAAI/bge-m3"
 DEVICE = "cpu"
 
