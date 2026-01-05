@@ -18,6 +18,57 @@ from langchain_core.output_parsers import StrOutputParser
 import recommend
 
 # ============================================================================
+# 0. 벡터DB 불러오기
+# ============================================================================
+import gdown
+import os
+import zipfile
+
+def setup_vector_dbs():
+    # 구글 드라이브 파일 ID 설정 (본인의 ID로 교체)
+    db_configs = [
+        {
+            "id": "1ttI_cujWXDOBFkD6WO_vlI21V3YGzgSB", 
+            "zip_name": "chroma_db_catalog.zip", 
+            "folder_name": "./chroma_db_catalog"
+        },
+        {
+            "id": "11D34U49KZwgJLnURnCu8K4p8kKjBlaL4", 
+            "zip_name": "chroma_db_catalog_clause.zip", 
+            "folder_name": "./chroma_db_clause"
+        }
+    ]
+
+    for db in db_configs:
+        # 폴더가 이미 존재하는지 확인
+        if not os.path.exists(db["folder_name"]):
+            print(f"{db['folder_name']} 다운로드 중...")
+            url = f'https://drive.google.com/uc?id={db["id"]}'
+            
+            try:
+                # 다운로드
+                gdown.download(url, db["zip_name"], quiet=False)
+                
+                # 압축 해제
+                with zipfile.ZipFile(db["zip_name"], 'r') as zip_ref:
+                    zip_ref.extractall("./")
+                
+                # 압축 파일 삭제
+                os.remove(db["zip_name"])
+                print(f"{db['folder_name']} 설정 완료.")
+            except Exception as e:
+                print(f"{db['folder_name']} 처리 중 오류 발생: {e}")
+        else:
+            print(f"{db['folder_name']} 가 이미 존재합니다.")
+
+# 앱 시작 시 한 번 실행
+setup_vector_dbs()
+
+# 앱 실행 시 가장 먼저 호출
+setup_vector_dbs()
+
+# 이후 기존 app.py 코드 진행...
+# ============================================================================
 # 1. 환경 설정 및 스타일링 (주황/남색 계열 적용)
 # ============================================================================
 load_dotenv()
