@@ -1,8 +1,8 @@
 # 💡 현대해상 Hi-light: AI 맞춤형 보험 추천 및 약관 분석 서비스
 본 프로젝트는 사용자의 관심 태그와 상황을 바탕으로 최적의 보험 상품을 추천하고, 복잡한 보험 약관을 AI가 정밀 분석하여 알기 쉽게 설명해 주는 서비스입니다.
 # 핵심
-1. 하이브리드 추천 로직 (2-Step Search)
-Step 1: 카탈로그 기반 경량 검색
+## 1. 하이브리드 추천 로직 (2-Step Search)
+### Step 1: 카탈로그 기반 경량 검색
 
 웹 페이지(https://www.hi.co.kr/serviceAction.do?menuId=202652) 크롤링 데이터를 기반으로 구축된 경량 DB를 탐색합니다.
 
@@ -10,13 +10,13 @@ Step 1: 카탈로그 기반 경량 검색
 
 추천 상품과 관련된 일상적 사고 시나리오를 제시하여 사용자가 자연스럽게 상세 분석 단계로 진입하도록 유도합니다.
 
-Step 2: 약관(Clause) 기반 정밀 분석
+### Step 2: 약관(Clause) 기반 정밀 분석
 
 기존 RAG 로직을 활용하여 약관 전문 DB에서 상세 보장 내용을 검색합니다.
 
 추천 사유, 약관 근거, 보장 한계점, 매칭 점수를 객관적으로 제시하여 정보의 신뢰도를 높입니다.
 
-2. 비즈니스 로직 및 로그 관리
+## 2. 비즈니스 로직 및 로그 관리
 Logic Separation: 추천 엔진과 로그 관리 로직을 recommend.py로 모듈화하여 UI 코드(app.py)와 분리했습니다.
 
 Rule-based Engine: 카탈로그 데이터 기반의 룰베이스 추천을 수행하며, 향후 알고리즘 고도화 시 UI 수정 없이 백엔드 로직만 업데이트가 가능합니다.
@@ -77,8 +77,9 @@ pip install langchain langchain-community langchain-chroma langchain-huggingface
 pip install sentence-transformers huggingface-hub
 ```
 
-# 원할 경우 requirements.txt 설치
+
 ```
+# 원할 경우 requirements.txt 설치
 pip install -r requirements.txt
 ```
 3. 서비스 실행
