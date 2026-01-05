@@ -20,6 +20,12 @@ import recommend
 # ============================================================================
 # 0. 벡터DB 불러오기
 # ============================================================================
+import streamlit as st
+import gdown
+import os
+import zipfile
+
+# --- 1. DB 설정 함수 (안정성 강화) ---
 def setup_vector_dbs():
     base_path = os.path.dirname(os.path.abspath(__file__))
     db_configs = [
@@ -27,29 +33,42 @@ def setup_vector_dbs():
         {"id": "11D34U49KZwgJLnURnCu8K4p8kKjBlaL4", "zip_name": "chroma_db_clause.zip", "folder": "chroma_db_clause"}
     ]
 
-    for db in db_configs:
-        target_path = os.path.join(base_path, db["folder"])
-        if not os.path.exists(target_path):
-            # st.status를 사용하면 Streamlit이 서버 연결을 끊지 않고 기다려줍니다.
-            with st.status(f"🛠️ {db['folder']} 구성 중...", expanded=True) as status:
-                st.write("☁️ 구글 드라이브에서 데이터 다운로드 중...")
-                url = f'https://drive.google.com/uc?id={db["id"]}'
-                zip_path = os.path.join(base_path, db["zip_name"])
-                
+    needed = [db for db in db_configs if not os.path.exists(os.path.join(base_path, db["folder"]))]
+    
+    if not needed:
+        return True
+
+    # 데이터가 없을 때만 화면에 상태 표시
+    with st.status("🚀 최초 실행을 위한 데이터베이스 구성 중...", expanded=True) as status:
+        for db in needed:
+            st.write(f"📥 {db['folder']} 다운로드 중 (약 30초 소요)...")
+            url = f'https://drive.google.com/uc?id={db["id"]}'
+            zip_path = os.path.join(base_path, db["zip_name"])
+            
+            try:
                 gdown.download(url, zip_path, quiet=False, fuzzy=True)
-                
-                st.write("📦 압축 해제 중...")
                 with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                     zip_ref.extractall(base_path)
-                
                 os.remove(zip_path)
-                status.update(label=f"✅ {db['folder']} 완료!", state="complete")
+            except Exception as e:
+                st.error(f"다운로드 실패: {e}")
+                return False
+        status.update(label="✅ 구성 완료! 서비스를 시작합니다.", state="complete", expanded=False)
+    return True
 
-# --- 2. 리소스 로드 로직 (Lazy Loading) ---
-@st.cache_resource
-def get_vectorstores():
-    # 여기서 호출하면 앱이 켜진 후, 실제 필요할 때만 다운로드를 시작합니다.
-    setup_vector_dbs()
+# --- 2. 메인 실행 로직 ---
+def main():
+    # [중요] 최상단이 아닌 여기서 실행해야 Streamlit이 Health Check에 성공합니다.
+    if not setup_vector_dbs():
+        st.error("데이터베이스 로드에 실패했습니다. 관리자에게 문의하세요.")
+        st.stop()
+
+    # 이후 기존 로직 (st.title, load_vectorstore 등) 진행
+    st.title("💡 현대해상 Hi-light")
+    # ... 나머지 코드 ...
+
+if __name__ == "__main__":
+    main()
 
 
 # 이후 기존 app.py 코드 진행...
