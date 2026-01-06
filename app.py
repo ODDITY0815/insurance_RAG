@@ -1,9 +1,11 @@
+
 import streamlit as st
 import os
 import re
 import uuid
 import time
 import json
+import zipfile
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -20,55 +22,40 @@ import recommend
 # ============================================================================
 # 0. 벡터DB 불러오기
 # ============================================================================
-import streamlit as st
-import gdown
-import os
-import zipfile
-
-# --- 1. DB 설정 함수 (안정성 강화) ---
-def setup_vector_dbs():
+def prepare_databases():
+    # 현재 파일의 경로를 기준으로 설정
     base_path = os.path.dirname(os.path.abspath(__file__))
+    
+    # [설정] 압축 파일명과 해제될 폴더명 매핑
     db_configs = [
-        {"id": "1ttI_cujWXDOBFkD6WO_vlI21V3YGzgSB", "zip_name": "chroma_db_catalog.zip", "folder": "chroma_db_catalog"},
-        {"id": "11D34U49KZwgJLnURnCu8K4p8kKjBlaL4", "zip_name": "chroma_db_clause.zip", "folder": "chroma_db_clause"}
+        {"zip": "chroma_db_catalog.zip", "folder": "chroma_db_catalog"},
+        {"zip": "chroma_db_catalog_clause.zip", "folder": "chroma_db_clause"}
     ]
 
-    needed = [db for db in db_configs if not os.path.exists(os.path.join(base_path, db["folder"]))]
-    
-    if not needed:
-        return True
+    for db in db_configs:
+        zip_file_path = os.path.join(base_path, db["zip"])
+        extract_folder_path = os.path.join(base_path, db["folder"])
 
-    # 데이터가 없을 때만 화면에 상태 표시
-    with st.status("🚀 최초 실행을 위한 데이터베이스 구성 중...", expanded=True) as status:
-        for db in needed:
-            st.write(f"📥 {db['folder']} 다운로드 중 (약 30초 소요)...")
-            url = f'https://drive.google.com/uc?id={db["id"]}'
-            zip_path = os.path.join(base_path, db["zip_name"])
-            
-            try:
-                gdown.download(url, zip_path, quiet=False, fuzzy=True)
-                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                    zip_ref.extractall(base_path)
-                os.remove(zip_path)
-            except Exception as e:
-                st.error(f"다운로드 실패: {e}")
-                return False
-        status.update(label="✅ 구성 완료! 서비스를 시작합니다.", state="complete", expanded=False)
-    return True
+        # 1. 폴더가 이미 있는지 확인
+        if not os.path.exists(extract_folder_path):
+            # 2. 압축 파일이 서버에 존재하는지 확인
+            if os.path.exists(zip_file_path):
+                with st.spinner(f"📦 {db['folder']} 데이터를 구성 중입니다..."):
+                    try:
+                        with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+                            zip_ref.extractall(base_path)
+                        st.success(f"✅ {db['folder']} 압축 해제 완료!")
+                    except Exception as e:
+                        st.error(f"❌ {db['zip']} 해제 중 오류 발생: {e}")
+            else:
+                st.error(f"⚠️ 압축 파일을 찾을 수 없습니다: {db['zip']}")
+        else:
+            # 이미 폴더가 있으면 아무것도 하지 않음 (속도 최적화)
+            pass
 
-# --- 2. 메인 실행 로직 ---
-def main():
-    # [중요] 최상단이 아닌 여기서 실행해야 Streamlit이 Health Check에 성공합니다.
-    if not setup_vector_dbs():
-        st.error("데이터베이스 로드에 실패했습니다. 관리자에게 문의하세요.")
-        st.stop()
+# 앱 실행 시 가장 먼저 호출
+prepare_databases()
 
-    # 이후 기존 로직 (st.title, load_vectorstore 등) 진행
-    st.title("💡 현대해상 Hi-light")
-    # ... 나머지 코드 ...
-
-if __name__ == "__main__":
-    main()
 
 
 # 이후 기존 app.py 코드 진행...
@@ -271,10 +258,8 @@ def load_toc_data():
 if "global_toc_data" not in st.session_state:
     st.session_state.global_toc_data = load_toc_data()
 
-# 기존 상대 경로 대신 절대 경로 권장
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-PERSIST_DIR = os.path.join(BASE_DIR, "chroma_db_clause")
-CATALOG_DIR = os.path.join(BASE_DIR, "chroma_db_catalog")
+PERSIST_DIR = "./chroma_db_clause"
+CATALOG_DIR = "./chroma_db_catalog"
 MODEL_NAME = "BAAI/bge-m3"
 DEVICE = "cpu"
 
@@ -312,30 +297,17 @@ PRODUCT_LINKS = {
     "내삶엔(3N) 맞춤간편 건강보험": "https://www.hi.co.kr/serviceAction.do?menuId=203552",
     "뉴하이카 운전자상해보험": "https://www.hi.co.kr/serviceAction.do?menuId=100215",
     "굿앤굿 우리펫보험": "https://www.hi.co.kr/serviceAction.do?menuId=202403",
-    "퍼펙트플러스 종합보험(세만기형)": "https://www.hi.co.kr/serviceAction.do?menuId=202211",
+    "퍼펙트플러스 종합보험(세만기형)": "https://www.hi.co.kr/serviceAction.do?menuId=202211", # 링크 수정
     "행복가득 생활보장보험": "https://www.hi.co.kr/serviceAction.do?menuId=100242",
     "두배받는 암보험": "https://www.hi.co.kr/serviceAction.do?menuId=100224",
-    "노후웰스보험": "https://www.hi.co.kr/serviceAction.do?menuId=100231"
+    "노후웰스보험": "https://www.hi.co.kr/serviceAction.do?menuId=100231" # 추가
 }
 
 # ============================================================================
-# 3. Resource Loading (경량화: 단계별 로딩)
+# 3. Resource Loading
 # ============================================================================
 @st.cache_resource
-def load_catalog_vectorstore():
-    """카탈로그 전용 벡터스토어 로드 (1단계용)"""
-    embeddings = HuggingFaceEmbeddings(
-        model_name=MODEL_NAME,
-        model_kwargs={'device': DEVICE},
-        encode_kwargs={'normalize_embeddings': True}
-    )
-    if os.path.exists(CATALOG_DIR) and os.listdir(CATALOG_DIR):
-        return Chroma(persist_directory=CATALOG_DIR, embedding_function=embeddings, collection_name="insurance_catalog")
-    return None
-
-@st.cache_resource
 def load_vectorstore():
-    """약관 전용 벡터스토어 로드 (2단계 이후용)"""
     embeddings = HuggingFaceEmbeddings(
         model_name=MODEL_NAME,
         model_kwargs={'device': DEVICE},
@@ -343,6 +315,18 @@ def load_vectorstore():
     )
     if os.path.exists(PERSIST_DIR) and os.listdir(PERSIST_DIR):
         return Chroma(persist_directory=PERSIST_DIR, embedding_function=embeddings, collection_name="insurance_rag")
+    return None
+
+@st.cache_resource
+def load_catalog_vectorstore():
+    """카탈로그 전용 벡터스토어 로드"""
+    embeddings = HuggingFaceEmbeddings(
+        model_name=MODEL_NAME,
+        model_kwargs={'device': DEVICE},
+        encode_kwargs={'normalize_embeddings': True}
+    )
+    if os.path.exists(CATALOG_DIR) and os.listdir(CATALOG_DIR):
+        return Chroma(persist_directory=CATALOG_DIR, embedding_function=embeddings, collection_name="insurance_catalog")
     return None
 
 @st.cache_resource
@@ -477,7 +461,7 @@ def analyze_catalog_tags_with_llm(catalog_vectorstore, llm, tags, natural_langua
     chain = (
         {
             "tags": lambda x: tag_str,
-            "catalog_context": lambda x: catalog_context[:4000],
+            "catalog_context": lambda x: catalog_context[:4000], # 컨텍스트 길이 증가
             "docs_context": lambda x: format_catalog_docs(docs)
         }
         | prompt | llm | StrOutputParser()
