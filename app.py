@@ -1,4 +1,3 @@
-
 import streamlit as st
 import os
 import re
@@ -29,7 +28,7 @@ def prepare_databases():
     # [설정] 압축 파일명과 해제될 폴더명 매핑
     db_configs = [
         {"zip": "chroma_db_catalog.zip", "folder": "chroma_db_catalog"},
-        {"zip": "chroma_db_catalog_clause.zip", "folder": "chroma_db_clause"}
+        {"zip": "chroma_db_clause.zip", "folder": "chroma_db_clause"}
     ]
 
     for db in db_configs:
