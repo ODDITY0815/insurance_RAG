@@ -312,29 +312,18 @@ PRODUCT_LINKS = {
     "내삶엔(3N) 맞춤간편 건강보험": "https://www.hi.co.kr/serviceAction.do?menuId=203552",
     "뉴하이카 운전자상해보험": "https://www.hi.co.kr/serviceAction.do?menuId=100215",
     "굿앤굿 우리펫보험": "https://www.hi.co.kr/serviceAction.do?menuId=202403",
-    "퍼펙트플러스 종합보험(세만기형)": "https://www.hi.co.kr/serviceAction.do?menuId=202211", # 링크 수정
+    "퍼펙트플러스 종합보험(세만기형)": "https://www.hi.co.kr/serviceAction.do?menuId=202211",
     "행복가득 생활보장보험": "https://www.hi.co.kr/serviceAction.do?menuId=100242",
     "두배받는 암보험": "https://www.hi.co.kr/serviceAction.do?menuId=100224",
-    "노후웰스보험": "https://www.hi.co.kr/serviceAction.do?menuId=100231" # 추가
+    "노후웰스보험": "https://www.hi.co.kr/serviceAction.do?menuId=100231"
 }
 
 # ============================================================================
-# 3. Resource Loading
+# 3. Resource Loading (경량화: 단계별 로딩)
 # ============================================================================
 @st.cache_resource
-def load_vectorstore():
-    embeddings = HuggingFaceEmbeddings(
-        model_name=MODEL_NAME,
-        model_kwargs={'device': DEVICE},
-        encode_kwargs={'normalize_embeddings': True}
-    )
-    if os.path.exists(PERSIST_DIR) and os.listdir(PERSIST_DIR):
-        return Chroma(persist_directory=PERSIST_DIR, embedding_function=embeddings, collection_name="insurance_rag")
-    return None
-
-@st.cache_resource
 def load_catalog_vectorstore():
-    """카탈로그 전용 벡터스토어 로드"""
+    """카탈로그 전용 벡터스토어 로드 (1단계용)"""
     embeddings = HuggingFaceEmbeddings(
         model_name=MODEL_NAME,
         model_kwargs={'device': DEVICE},
@@ -342,6 +331,18 @@ def load_catalog_vectorstore():
     )
     if os.path.exists(CATALOG_DIR) and os.listdir(CATALOG_DIR):
         return Chroma(persist_directory=CATALOG_DIR, embedding_function=embeddings, collection_name="insurance_catalog")
+    return None
+
+@st.cache_resource
+def load_vectorstore():
+    """약관 전용 벡터스토어 로드 (2단계 이후용)"""
+    embeddings = HuggingFaceEmbeddings(
+        model_name=MODEL_NAME,
+        model_kwargs={'device': DEVICE},
+        encode_kwargs={'normalize_embeddings': True}
+    )
+    if os.path.exists(PERSIST_DIR) and os.listdir(PERSIST_DIR):
+        return Chroma(persist_directory=PERSIST_DIR, embedding_function=embeddings, collection_name="insurance_rag")
     return None
 
 @st.cache_resource
@@ -476,7 +477,7 @@ def analyze_catalog_tags_with_llm(catalog_vectorstore, llm, tags, natural_langua
     chain = (
         {
             "tags": lambda x: tag_str,
-            "catalog_context": lambda x: catalog_context[:4000], # 컨텍스트 길이 증가
+            "catalog_context": lambda x: catalog_context[:4000],
             "docs_context": lambda x: format_catalog_docs(docs)
         }
         | prompt | llm | StrOutputParser()
