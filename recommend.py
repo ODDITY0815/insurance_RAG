@@ -205,12 +205,9 @@ def log_user_action(visitor_id, consult_count, open_time_str, action_type, user_
         client = get_sheets_client()
         ws = get_or_create_sheet(client, SHEET_USER_LOG)
         if ws:
-            # 시트가 비어있으면 헤더 추가
-            if not ws.get_all_values():
-                ws.append_row(headers, value_input_option='USER_ENTERED')
-            
-            # [핵심 수정] value_input_option과 insert_data_option 추가
-            ws.append_rows([row], value_input_option='USER_ENTERED') # row를 [row]로 감싸서 전달        
+            # [해결] append_row 대신 append_rows([[row]]) 사용
+            # 리스트를 한 번 더 감싸면(2차원 배열), 구글 시트가 항상 A열부터 채웁니다.
+            ws.append_rows([row], value_input_option='USER_ENTERED')
     except Exception as e:
         print(f"❌ [구글시트] 기록 실패: {e}")
     
