@@ -14,7 +14,7 @@ SCOPES = [
     'https://www.googleapis.com/auth/spreadsheets',
     'https://www.googleapis.com/auth/drive'
 ]
-SPREADSHEET_NAME = 'Hilight_db'
+SPREADSHEET_NAME = 'Hipass_db'
 SHEET_USER_LOG = '사용자_로그'
 SHEET_CONSULT_LOG = '상담_신청'
 LOCAL_LOG_FILE = "local_log.xlsx"
