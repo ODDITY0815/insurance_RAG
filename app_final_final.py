@@ -824,7 +824,7 @@ def render_breadcrumb(step):
 
 def render_situation_cards(situations):
     """1단계: 3개의 상황 질문 카드 렌더링"""
-    st.markdown("### 💭 저와 편하게 찾아봐요!")
+    st.markdown("### 💭 이런 상황, 한 번쯤 생각해보셨나요?")
     st.caption("궁금한 상황을 선택하면 보험 전문가가 분석해드립니다")
     
     for i, situation in enumerate(situations):
@@ -834,7 +834,7 @@ def render_situation_cards(situations):
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button(f"🔗 이런 고민 더 찾아보기", key=f"sit_{i}", use_container_width=True):
+        if st.button(f"🔗 🔍 이 상황, 보험의 약속으로 확인하기 →", key=f"sit_{i}", use_container_width=True):
             st.session_state.selected_situation = situation
             st.session_state.step = 2.5
             st.session_state.step_start_time = time.time()
@@ -897,9 +897,13 @@ def render_keyword_analysis(keywords_data, situation_text):
         
         st.markdown(f"""
         <div class="hero-card">
-            <div class="hero-label">보험 키워드 분석</div>
-            <h3 style="color:#1A237E; margin-bottom:16px;">선택하신 상황</h3>
-            <p style="color:#546E7A; font-size:15px; line-height:1.6; margin-bottom:20px;">"{situation_text}"</p>
+            <div class="hero-label">따뜻한 보험 통역소</div>
+            <h3 style="color:#1A237E; margin-bottom:12px; font-size:18px; line-height:1.4;">
+                "{situation_text}"
+            </h3>
+            <p style="color:#546E7A; font-size:14px; margin-bottom:0;">
+                들려주신 소중한 고민을 보험의 언어로 조심스럽게 옮겨보았어요.
+            </p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -1092,7 +1096,7 @@ def main():
     # --- Step 1: Interest & Tag Selection ---
     if st.session_state.step == 1:
         st.title("Hi-Pass")
-        st.caption("일상적인 고민을 쉽게 찾아보는 AI")
+        st.caption("복잡한 보험 용어는 잠시 잊으셔도 좋아요. 평소 하시는 말씀 그대로 들려주시면, 당신의 상황에 꼭 맞는 이야기를 찾아드릴게요.")
         
         st.subheader("관심사를 선택해주세요")
         cols = st.columns(3)
@@ -1202,7 +1206,7 @@ def main():
         
         has_any_input = bool(all_selected) or any(v.strip() for v in st.session_state.natural_language_inputs.values())
         
-        if st.button("어떤 고민이 있으신가요?", type="primary", disabled=not has_any_input, use_container_width=True):
+        if st.button("다음: 당신이 겪을 수 있는 일상 시나리오 살펴보기", type="primary", disabled=not has_any_input, use_container_width=True):
             st.session_state.step = 1.5
             st.session_state.step_start_time = time.time()
             
@@ -1259,20 +1263,20 @@ def main():
         st.markdown("---")
         st.markdown("""
         <div class="custom-input-box">
-            <span class="custom-input-label">✍️ 또는 자유롭게 상황을 입력해주세요</span>
+            <span class="custom-input-label"> 📝 보험 용어가 아니어도 괜찮아요. 요즘 어떤 고민이 있으신가요?</span>
         </div>
         """, unsafe_allow_html=True)
         
         free_text = st.text_area(
-            "상황을 자유롭게 적어주세요",
+            "막연한 불안함도 좋아요. 평소 하시는 말씀 그대로 들려주세요.",
             value=st.session_state.free_text_input,
             height=100,
-            placeholder="예: 주말에 축구하다가 다리가 부러졌어요.",
+            placeholder="예: 새 차를 샀는데 주차 중에 누가 긁고 가거나, 갑자기 비가 많이 와서 차가 물에 잠기면 보상받을 수 있나요?",
             key="free_text_area_15"
         )
         st.session_state.free_text_input = free_text
         
-        if st.button("이 상황으로 찾기 🔍", type="primary", disabled=not free_text.strip(), use_container_width=True):
+        if st.button("🔍 이 상황, 보험의 약속으로 확인하기 → ", type="primary", disabled=not free_text.strip(), use_container_width=True):
             st.session_state.selected_situation = free_text
             st.session_state.step = 2.5
             st.session_state.step_start_time = time.time()
