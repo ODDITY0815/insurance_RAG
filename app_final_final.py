@@ -897,12 +897,12 @@ def render_keyword_analysis(keywords_data, situation_text):
         
         st.markdown(f"""
         <div class="hero-card">
-            <div class="hero-label">따뜻한 보험 통역소</div>
+            <div class="hero-label">이런 고민은 이렇게 : </div>
             <h3 style="color:#1A237E; margin-bottom:12px; font-size:18px; line-height:1.4;">
                 "{situation_text}"
             </h3>
             <p style="color:#546E7A; font-size:14px; margin-bottom:0;">
-                들려주신 소중한 고민을 보험의 언어로 조심스럽게 옮겨보았어요.
+                들려주신 소중한 고민을 보험의 언어로 옮겨보았어요.
             </p>
         </div>
         """, unsafe_allow_html=True)
