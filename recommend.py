@@ -210,11 +210,7 @@ def log_user_action(visitor_id, consult_count, open_time_str, action_type, user_
                 ws.append_row(headers, value_input_option='USER_ENTERED')
             
             # [핵심 수정] value_input_option과 insert_data_option 추가
-            ws.append_row(
-                row, 
-                value_input_option='USER_ENTERED', 
-                insert_data_option='INSERT_ROWS'
-            )
+            ws.append_rows([row], value_input_option='USER_ENTERED') # row를 [row]로 감싸서 전달        
     except Exception as e:
         print(f"❌ [구글시트] 기록 실패: {e}")
     
