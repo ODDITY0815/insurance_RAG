@@ -470,8 +470,8 @@ def get_llm():
 # Session State 초기화
 if "step" not in st.session_state: st.session_state.step = 1
 if "selected_interest" not in st.session_state: st.session_state.selected_interest = None
-if "selected_tags" not in st.session_state: st.session_state.selected_tags = {"누구": [], "위험": [], "우선순위": [], "변화": []}
-if "natural_language_inputs" not in st.session_state: st.session_state.natural_language_inputs = {"누구": "", "위험": "", "우선순위": "", "변화": ""}
+if "selected_tags" not in st.session_state: st.session_state.selected_tags = {"누구": [], "걱정": [], "우선순위": [], "변화": []}
+if "natural_language_inputs" not in st.session_state: st.session_state.natural_language_inputs = {"누구": "", "걱정": "", "우선순위": "", "변화": ""}
 if "free_text_input" not in st.session_state: st.session_state.free_text_input = ""
 if "situation" not in st.session_state: st.session_state.situation = {"when": None, "where": None, "what": None, "text": ""}
 if "catalog_result" not in st.session_state: st.session_state.catalog_result = None
@@ -1125,11 +1125,11 @@ def main():
             recommended = TAG_HIERARCHY["관심사"][st.session_state.selected_interest]
             all_tags_by_category = {
                 "누구": TAG_HIERARCHY["누구"],
-                "위험": TAG_HIERARCHY["위험"],
+                "걱정": TAG_HIERARCHY["걱정"],
                 "우선순위": TAG_HIERARCHY["우선순위"]
             }
             
-            for category in ["누구", "위험", "우선순위"]:
+            for category in ["누구", "걱정", "우선순위"]:
                 st.markdown(f"**{category}**")
                 
                 recommended_tags = recommended.get(category, [])
