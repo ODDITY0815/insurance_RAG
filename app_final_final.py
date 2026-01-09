@@ -75,7 +75,7 @@ def setup_vector_dbs():
 load_dotenv()
 
 st.set_page_config(
-    page_title="현대해상 Hi-light",
+    page_title="현대해상 Hi-Pass",
     page_icon="💡",
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -409,8 +409,8 @@ def get_tag_hierarchy():
     
     hierarchy = {
         "관심사": {},
-        "누구": recommend.get_all_tags_by_category("누구"),
-        "위험": recommend.get_all_tags_by_category("위험"),
+        "누구": recommend.get_all_tags_by_category("대상"),
+        "걱정": recommend.get_all_tags_by_category("걱정"),
         "우선순위": recommend.get_all_tags_by_category("우선순위"),
         "변화": recommend.get_all_tags_by_category("변화")
     }
@@ -1178,7 +1178,7 @@ def main():
                 nl_input = st.text_input(
                     f"💬 {category} 직접 입력",
                     value=st.session_state.natural_language_inputs.get(category, ""),
-                    placeholder=f"편하게 말씀해주세요!",
+                    placeholder=f"자유롭게 입력해주세요!",
                     key=nl_key
                 )
                 st.session_state.natural_language_inputs[category] = nl_input
@@ -1263,7 +1263,7 @@ def main():
         st.markdown("---")
         st.markdown("""
         <div class="custom-input-box">
-            <span class="custom-input-label"> 📝 보험 용어가 아니어도 괜찮아요. 요즘 어떤 고민이 있으신가요?</span>
+            <span class="custom-input-label"> 📝 자유롭게 입력해주세요. 요즘 어떤 고민이 있으신가요?</span>
         </div>
         """, unsafe_allow_html=True)
         
@@ -1276,7 +1276,7 @@ def main():
         )
         st.session_state.free_text_input = free_text
         
-        if st.button("🔍 이 상황, 보험의 약속으로 확인하기 → ", type="primary", disabled=not free_text.strip(), use_container_width=True):
+        if st.button("🔍 이런 상황은 어떻게 도움받을까요? → ", type="primary", disabled=not free_text.strip(), use_container_width=True):
             st.session_state.selected_situation = free_text
             st.session_state.step = 2.5
             st.session_state.step_start_time = time.time()
@@ -1374,7 +1374,7 @@ def main():
                     )
                     
                     time.sleep(1)
-                    status.markdown('<p class="loading-text">🖍️ 보장 범위에 형광펜 칠하는 중...</p>', unsafe_allow_html=True)
+                    status.markdown('<p class="loading-text">🖍️ 보장 범위 찾는 중...</p>', unsafe_allow_html=True)
                     
                     full_res = ""
                     for chunk in stream:
@@ -1535,7 +1535,7 @@ def main():
             <li>본 서비스의 결과만을 신뢰하여 발생한 손해에 대해서는 회사가 책임을 지지 않습니다.</li>
         </ul>
         <div style='text-align: center; margin-top: 10px; color: #90A4AE;'>
-            &copy; 2026 현대해상 Hi-light AI Service. All rights reserved.
+            &copy; 2026 현대해상 Hi-Pass AI Service. All rights reserved.
         </div>
     </div>
     """, unsafe_allow_html=True)
