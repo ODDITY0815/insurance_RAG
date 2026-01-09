@@ -834,7 +834,7 @@ def render_situation_cards(situations):
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button(f"🔗 🔍 이 상황, 보험의 약속으로 확인하기 →", key=f"sit_{i}", use_container_width=True):
+        if st.button(f"🔗 이런 상황에는 어떻게 도움받을까요? →", key=f"sit_{i}", use_container_width=True):
             st.session_state.selected_situation = situation
             st.session_state.step = 2.5
             st.session_state.step_start_time = time.time()
@@ -1096,7 +1096,7 @@ def main():
     # --- Step 1: Interest & Tag Selection ---
     if st.session_state.step == 1:
         st.title("Hi-Pass")
-        st.caption("복잡한 보험 용어는 잠시 잊으셔도 좋아요. 평소 하시는 말씀 그대로 들려주시면, 당신의 상황에 꼭 맞는 이야기를 찾아드릴게요.")
+        st.caption("평소 하시는 말씀 그대로 들려주시면, 당신의 상황에 꼭 맞는 이야기를 찾아드릴게요.")
         
         st.subheader("관심사를 선택해주세요")
         cols = st.columns(3)
