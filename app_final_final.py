@@ -465,7 +465,7 @@ def load_catalog_vectorstore():
 
 @st.cache_resource
 def get_llm():
-    return ChatGoogleGenerativeAI(model="gemini-2.0-flash-exp", temperature=0)
+    return ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
 
 # Session State 초기화
 if "step" not in st.session_state: st.session_state.step = 1
