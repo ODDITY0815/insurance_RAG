@@ -1206,7 +1206,7 @@ def main():
         
         has_any_input = bool(all_selected) or any(v.strip() for v in st.session_state.natural_language_inputs.values())
         
-        if st.button("다음: 당신이 겪을 수 있는 일상 시나리오 살펴보기", type="primary", disabled=not has_any_input, use_container_width=True):
+        if st.button("내 고민, 일상 시나리오로 구체화하기", type="primary", disabled=not has_any_input, use_container_width=True):
             st.session_state.step = 1.5
             st.session_state.step_start_time = time.time()
             
