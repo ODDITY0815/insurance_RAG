@@ -939,7 +939,7 @@ def render_product_recommendations(products_data):
             return
         
         st.markdown("---")
-        st.markdown("### 📦 고민을 해결할 가장 합리적인 선택, 확인해보시겠습니까?")
+        st.markdown("### 📦 고민을 해결할 가장 합리적인 선택, 확인하시겠어요?")
         
         for i, product in enumerate(products):
             raw_name = product.get("product_name", "상품명 없음")
