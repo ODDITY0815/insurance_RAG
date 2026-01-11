@@ -627,7 +627,7 @@ def recommend_products_for_situation(vectorstore, llm, situation_text, keywords_
 **[중요]**
 - product_name은 반드시 **파일 확장자(.txt) 없이** 순수 상품명만 출력하세요.
 - 예: "무배당 현대해상 퍼펙트플러스 종합보험(세만기형)(Hi2508)" (O)
-
+- 상황과 약관의 일치도를 0~100%으로 산출. 상황에 명시적인 면책사항이 포함될 경우 면책 정도에 따라 매우 낮은 점수, 혹은 0%를 출력하세요.
 **[출력 형식 - JSON Only]**
 {{
     "products": [
@@ -713,7 +713,7 @@ def analyze_tags_and_situation(vectorstore, llm, tags, situation_text, target_pr
 {{
     "product_name": "검증된 상품명",
     "feature_name": "핵심 특약명",
-    "match_score": 95,
+    "match_score": 80,
     "summary": "가정법을 사용한 보장 가능성 요약",
     "easy_explanation": "초등학생도 이해하는 쉬운 설명",
     "reasoning": "논리적 분석 내용",
