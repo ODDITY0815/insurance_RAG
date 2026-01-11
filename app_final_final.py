@@ -959,7 +959,7 @@ def render_product_recommendations(products_data):
             </div>
             """, unsafe_allow_html=True)
             
-            if st.button(f"상세 분석 보기", key=f"prod_{i}", use_container_width=True):
+            if st.button(f"논리적 분석 보기", key=f"prod_{i}", use_container_width=True):
                 st.session_state.selected_product = product
                 st.session_state.selected_product_name = prod_name
                 st.session_state.step = 3
