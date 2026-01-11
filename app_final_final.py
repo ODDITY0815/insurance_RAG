@@ -954,7 +954,6 @@ def render_product_recommendations(products_data):
             <div class="product-mini-card">
                 <div class="product-mini-title">{prod_name} <span style="color:#FF9F43; font-size:13px;">({score}% 적합)</span></div>
                 <div class="product-mini-desc">
-                    # <strong>핵심 특약:</strong> {feature}<br>
                     <strong>적합 이유:</strong> {why}
                 </div>
             </div>
